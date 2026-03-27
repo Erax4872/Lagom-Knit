@@ -1,0 +1,751 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Lagom Knit — Patterns for the Considered Maker</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&family=Jost:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --cream: #f8f5f0;
+    --warm-white: #fdfbf8;
+    --stone: #c4b9a8;
+    --bark: #8c7b6a;
+    --ink: #2a231e;
+    --ink-light: #5a4f47;
+    --sage: #7a8c7e;
+    --blush: #c9a898;
+    --gold: #b89a6e;
+    --font-serif: 'Cormorant Garamond', serif;
+    --font-sans: 'Jost', sans-serif;
+  }
+
+  body {
+    font-family: var(--font-sans);
+    background: var(--warm-white);
+    color: var(--ink);
+    line-height: 1.6;
+    overflow-x: hidden;
+  }
+
+  /* NAV */
+  nav {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    z-index: 100;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 1.25rem 3rem;
+    background: rgba(253,251,248,0.92);
+    backdrop-filter: blur(8px);
+    border-bottom: 1px solid rgba(196,185,168,0.3);
+  }
+
+  .nav-logo {
+    font-family: var(--font-serif);
+    font-size: 1.4rem;
+    font-weight: 400;
+    letter-spacing: 0.08em;
+    color: var(--ink);
+    text-decoration: none;
+  }
+
+  .nav-logo span { color: var(--gold); font-style: italic; }
+
+  .nav-links {
+    display: flex;
+    gap: 2.5rem;
+    list-style: none;
+  }
+
+  .nav-links a {
+    font-size: 0.75rem;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--ink-light);
+    text-decoration: none;
+    font-weight: 400;
+    transition: color 0.2s;
+  }
+
+  .nav-links a:hover { color: var(--gold); }
+
+  .cart-btn {
+    font-size: 0.7rem;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    background: var(--ink);
+    color: var(--warm-white);
+    border: none;
+    padding: 0.6rem 1.4rem;
+    cursor: pointer;
+    font-family: var(--font-sans);
+    transition: background 0.2s;
+  }
+
+  .cart-btn:hover { background: var(--gold); }
+
+  /* HERO */
+  .hero {
+    min-height: 100vh;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    padding-top: 5rem;
+  }
+
+  .hero-left {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: 5rem 3rem 5rem 5rem;
+  }
+
+  .hero-eyebrow {
+    font-size: 0.65rem;
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    color: var(--gold);
+    margin-bottom: 1.5rem;
+    font-weight: 400;
+  }
+
+  .hero-title {
+    font-family: var(--font-serif);
+    font-size: clamp(3.5rem, 6vw, 5.5rem);
+    font-weight: 300;
+    line-height: 1.05;
+    color: var(--ink);
+    margin-bottom: 1.5rem;
+  }
+
+  .hero-title em { font-style: italic; color: var(--bark); }
+
+  .hero-sub {
+    font-size: 0.9rem;
+    color: var(--ink-light);
+    max-width: 380px;
+    margin-bottom: 3rem;
+    font-weight: 300;
+    line-height: 1.8;
+  }
+
+  .hero-ctas { display: flex; gap: 1rem; align-items: center; }
+
+  .btn-primary {
+    font-size: 0.7rem;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    background: var(--ink);
+    color: var(--warm-white);
+    border: none;
+    padding: 0.9rem 2.2rem;
+    cursor: pointer;
+    font-family: var(--font-sans);
+    font-weight: 400;
+    transition: all 0.2s;
+  }
+
+  .btn-primary:hover { background: var(--gold); }
+
+  .btn-ghost {
+    font-size: 0.7rem;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    background: transparent;
+    color: var(--ink-light);
+    border: 1px solid var(--stone);
+    padding: 0.9rem 2.2rem;
+    cursor: pointer;
+    font-family: var(--font-sans);
+    font-weight: 400;
+    transition: all 0.2s;
+  }
+
+  .btn-ghost:hover { border-color: var(--ink); color: var(--ink); }
+
+  .hero-right {
+    background: var(--cream);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .pattern-bg {
+    position: absolute;
+    inset: 0;
+    opacity: 0.07;
+  }
+
+  .hero-tag {
+    position: absolute;
+    bottom: 2.5rem;
+    left: 2rem;
+    background: var(--warm-white);
+    padding: 1rem 1.25rem;
+    font-size: 0.7rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--bark);
+    border-left: 2px solid var(--gold);
+  }
+
+  /* SECTIONS */
+  .section-label {
+    font-size: 0.65rem;
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    color: var(--gold);
+    margin-bottom: 0.75rem;
+    font-weight: 400;
+  }
+
+  .section-title {
+    font-family: var(--font-serif);
+    font-size: clamp(2rem, 3.5vw, 3rem);
+    font-weight: 300;
+    line-height: 1.1;
+    color: var(--ink);
+  }
+
+  /* PATTERNS */
+  .patterns { padding: 7rem 5rem; background: var(--warm-white); }
+
+  .patterns-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    margin-bottom: 4rem;
+  }
+
+  .patterns-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 2rem;
+  }
+
+  .pattern-card { cursor: pointer; transition: transform 0.3s ease; }
+  .pattern-card:hover { transform: translateY(-4px); }
+
+  .pattern-img {
+    aspect-ratio: 3/4;
+    margin-bottom: 1.25rem;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .pattern-badge {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    background: var(--warm-white);
+    padding: 0.3rem 0.75rem;
+    font-size: 0.6rem;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--bark);
+  }
+
+  .pattern-card h3 {
+    font-family: var(--font-serif);
+    font-size: 1.3rem;
+    font-weight: 400;
+    color: var(--ink);
+    margin-bottom: 0.35rem;
+  }
+
+  .pattern-meta { display: flex; justify-content: space-between; align-items: center; }
+
+  .pattern-level {
+    font-size: 0.65rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--bark);
+  }
+
+  .pattern-price { font-size: 0.9rem; font-weight: 500; color: var(--ink); }
+
+  /* ABOUT */
+  .about { display: grid; grid-template-columns: 1fr 1fr; min-height: 70vh; }
+
+  .about-img { background: var(--cream); position: relative; overflow: hidden; min-height: 500px; }
+
+  .about-content {
+    padding: 6rem 5rem;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    background: var(--ink);
+  }
+
+  .about-content .section-label { color: var(--gold); }
+  .about-content .section-title { color: var(--warm-white); margin-bottom: 1.5rem; }
+
+  .about-text {
+    font-size: 0.9rem;
+    color: rgba(253,251,248,0.65);
+    line-height: 1.9;
+    font-weight: 300;
+    margin-bottom: 2.5rem;
+    max-width: 420px;
+  }
+
+  .about-stats {
+    display: flex;
+    gap: 3rem;
+    margin-bottom: 2.5rem;
+    padding-top: 2rem;
+    border-top: 1px solid rgba(255,255,255,0.1);
+  }
+
+  .stat-num {
+    font-family: var(--font-serif);
+    font-size: 2.5rem;
+    font-weight: 300;
+    color: var(--gold);
+    line-height: 1;
+    display: block;
+  }
+
+  .stat-label {
+    font-size: 0.65rem;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: rgba(253,251,248,0.4);
+    margin-top: 0.3rem;
+    display: block;
+  }
+
+  /* BLOG */
+  .blog { padding: 7rem 5rem; background: var(--cream); }
+
+  .blog-header { text-align: center; margin-bottom: 4rem; }
+
+  .blog-grid {
+    display: grid;
+    grid-template-columns: 2fr 1fr 1fr;
+    gap: 2rem;
+  }
+
+  .blog-card { background: var(--warm-white); }
+
+  .blog-img { width: 100%; aspect-ratio: 16/10; margin-bottom: 1.5rem; position: relative; overflow: hidden; }
+
+  .blog-card-content { padding: 0 1rem 1.5rem; }
+
+  .blog-category {
+    font-size: 0.6rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--gold);
+    margin-bottom: 0.5rem;
+    display: block;
+  }
+
+  .blog-card h3 {
+    font-family: var(--font-serif);
+    font-size: 1.2rem;
+    font-weight: 400;
+    color: var(--ink);
+    margin-bottom: 0.5rem;
+    line-height: 1.3;
+  }
+
+  .blog-card p { font-size: 0.8rem; color: var(--ink-light); font-weight: 300; line-height: 1.7; }
+
+  /* FOOTER */
+  footer {
+    background: var(--ink);
+    padding: 4rem 5rem;
+    display: grid;
+    grid-template-columns: 2fr 1fr 1fr 1fr;
+    gap: 3rem;
+  }
+
+  .footer-brand {
+    font-family: var(--font-serif);
+    font-size: 1.6rem;
+    font-weight: 300;
+    color: var(--warm-white);
+    margin-bottom: 1rem;
+    letter-spacing: 0.05em;
+  }
+
+  .footer-brand span { color: var(--gold); font-style: italic; }
+
+  .footer-desc {
+    font-size: 0.8rem;
+    color: rgba(253,251,248,0.4);
+    font-weight: 300;
+    line-height: 1.8;
+    max-width: 240px;
+  }
+
+  .footer-col h4 {
+    font-size: 0.65rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--gold);
+    margin-bottom: 1.25rem;
+    font-weight: 400;
+  }
+
+  .footer-col ul { list-style: none; }
+
+  .footer-col li {
+    margin-bottom: 0.6rem;
+    font-size: 0.8rem;
+    color: rgba(253,251,248,0.5);
+    font-weight: 300;
+    cursor: pointer;
+    transition: color 0.2s;
+  }
+
+  .footer-col li:hover { color: var(--warm-white); }
+
+  .footer-bottom {
+    background: var(--ink);
+    border-top: 1px solid rgba(255,255,255,0.08);
+    padding: 1.5rem 5rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .footer-bottom p { font-size: 0.7rem; color: rgba(253,251,248,0.25); letter-spacing: 0.08em; }
+
+  .divider { display: flex; align-items: center; gap: 1.5rem; padding: 3.5rem 5rem; background: var(--warm-white); }
+  .divider-line { flex: 1; height: 1px; background: var(--stone); opacity: 0.4; }
+  .divider-text { font-family: var(--font-serif); font-style: italic; font-size: 1rem; color: var(--bark); letter-spacing: 0.05em; white-space: nowrap; }
+</style>
+</head>
+<body>
+
+<nav>
+  <a class="nav-logo" href="#">Lagom <span>Knit</span></a>
+  <ul class="nav-links">
+    <li><a href="#">Patterns</a></li>
+    <li><a href="#">Collections</a></li>
+    <li><a href="#">About</a></li>
+    <li><a href="#">Journal</a></li>
+  </ul>
+  <button class="cart-btn">Shop Now</button>
+</nav>
+
+<section class="hero">
+  <div class="hero-left">
+    <p class="hero-eyebrow">Handcrafted with intention</p>
+    <h1 class="hero-title">Patterns for the<br><em>considered</em><br>maker</h1>
+    <p class="hero-sub">Thoughtfully designed knitwear patterns that celebrate the art of slow making. Each design balances simplicity with quiet elegance.</p>
+    <div class="hero-ctas">
+      <button class="btn-primary">Browse Patterns</button>
+      <button class="btn-ghost">Our Story</button>
+    </div>
+  </div>
+  <div class="hero-right">
+    <svg class="pattern-bg" viewBox="0 0 400 600" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <pattern id="knit" x="0" y="0" width="20" height="20" patternUnits="userSpaceOnUse">
+          <path d="M10 2 C6 2 2 5 2 10 C2 15 6 18 10 18 C14 18 18 15 18 10 C18 5 14 2 10 2Z" fill="none" stroke="#8c7b6a" stroke-width="0.8"/>
+          <line x1="10" y1="0" x2="10" y2="4" stroke="#8c7b6a" stroke-width="0.8"/>
+          <line x1="10" y1="16" x2="10" y2="20" stroke="#8c7b6a" stroke-width="0.8"/>
+        </pattern>
+      </defs>
+      <rect width="400" height="600" fill="url(#knit)"/>
+    </svg>
+    <svg viewBox="0 0 340 480" xmlns="http://www.w3.org/2000/svg" style="width:78%;max-width:340px;position:relative;z-index:1;">
+      <rect x="60" y="120" width="220" height="280" rx="8" fill="#c4b9a8" opacity="0.5"/>
+      <g stroke="#8c7b6a" stroke-width="1.2" opacity="0.6">
+        <path d="M80 150 Q100 140 120 150 Q140 160 160 150 Q180 140 200 150 Q220 160 240 150 Q260 140 280 150"/>
+        <path d="M80 165 Q100 155 120 165 Q140 175 160 165 Q180 155 200 165 Q220 175 240 165 Q260 155 280 165"/>
+        <path d="M80 180 Q100 170 120 180 Q140 190 160 180 Q180 170 200 180 Q220 190 240 180 Q260 170 280 180"/>
+        <path d="M80 195 Q100 185 120 195 Q140 205 160 195 Q180 185 200 195 Q220 205 240 195 Q260 185 280 195"/>
+        <path d="M80 210 Q100 200 120 210 Q140 220 160 210 Q180 200 200 210 Q220 220 240 210 Q260 200 280 210"/>
+        <path d="M80 225 Q100 215 120 225 Q140 235 160 225 Q180 215 200 225 Q220 235 240 225 Q260 215 280 225"/>
+        <path d="M80 240 Q100 230 120 240 Q140 250 160 240 Q180 230 200 240 Q220 250 240 240 Q260 230 280 240"/>
+        <path d="M80 255 Q100 245 120 255 Q140 265 160 255 Q180 245 200 255 Q220 265 240 255 Q260 245 280 255"/>
+        <path d="M80 270 Q100 260 120 270 Q140 280 160 270 Q180 260 200 270 Q220 280 240 270 Q260 260 280 270"/>
+        <path d="M80 285 Q100 275 120 285 Q140 295 160 285 Q180 275 200 285 Q220 295 240 285 Q260 275 280 285"/>
+        <path d="M80 300 Q100 290 120 300 Q140 310 160 300 Q180 290 200 300 Q220 310 240 300 Q260 290 280 300"/>
+        <path d="M80 315 Q100 305 120 315 Q140 325 160 315 Q180 305 200 315 Q220 325 240 315 Q260 305 280 315"/>
+        <path d="M80 330 Q100 320 120 330 Q140 340 160 330 Q180 320 200 330 Q220 340 240 330 Q260 320 280 330"/>
+        <path d="M80 345 Q100 335 120 345 Q140 355 160 345 Q180 335 200 345 Q220 355 240 345 Q260 335 280 345"/>
+        <path d="M80 360 Q100 350 120 360 Q140 370 160 360 Q180 350 200 360 Q220 370 240 360 Q260 350 280 360"/>
+        <path d="M80 375 Q100 365 120 375 Q140 385 160 375 Q180 365 200 375 Q220 385 240 375 Q260 365 280 375"/>
+      </g>
+      <path d="M130 120 Q170 95 210 120" fill="none" stroke="#8c7b6a" stroke-width="2"/>
+      <rect x="20" y="125" width="60" height="160" rx="6" fill="#c4b9a8" opacity="0.4"/>
+      <rect x="260" y="125" width="60" height="160" rx="6" fill="#c4b9a8" opacity="0.4"/>
+      <circle cx="170" cy="60" r="28" fill="#b89a6e" opacity="0.35"/>
+      <circle cx="170" cy="60" r="28" fill="none" stroke="#8c7b6a" stroke-width="1"/>
+      <path d="M155 45 Q170 60 185 75" stroke="#8c7b6a" stroke-width="1" fill="none"/>
+      <path d="M148 60 Q170 58 192 60" stroke="#8c7b6a" stroke-width="1" fill="none"/>
+      <path d="M155 75 Q170 60 185 45" stroke="#8c7b6a" stroke-width="1" fill="none"/>
+    </svg>
+    <div class="hero-tag">New — Autumn Collection 2025</div>
+  </div>
+</section>
+
+<div class="divider">
+  <div class="divider-line"></div>
+  <span class="divider-text">Designed for knitters who love the process as much as the result</span>
+  <div class="divider-line"></div>
+</div>
+
+<section class="patterns">
+  <div class="patterns-header">
+    <div>
+      <p class="section-label">The Collection</p>
+      <h2 class="section-title">Featured<br>Patterns</h2>
+    </div>
+    <button class="btn-ghost">View All</button>
+  </div>
+  <div class="patterns-grid">
+    <div class="pattern-card">
+      <div class="pattern-img">
+        <svg viewBox="0 0 300 400" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:100%;display:block;">
+          <rect width="300" height="400" fill="#e8e0d4"/>
+          <g stroke="#a09080" stroke-width="1.2" fill="none" opacity="0.7">
+            <path d="M30 60 Q60 45 90 60 Q120 75 150 60 Q180 45 210 60 Q240 75 270 60"/>
+            <path d="M30 78 Q60 63 90 78 Q120 93 150 78 Q180 63 210 78 Q240 93 270 78"/>
+            <path d="M30 96 Q60 81 90 96 Q120 111 150 96 Q180 81 210 96 Q240 111 270 96"/>
+            <path d="M30 114 Q60 99 90 114 Q120 129 150 114 Q180 99 210 114 Q240 129 270 114"/>
+            <path d="M30 132 Q60 117 90 132 Q120 147 150 132 Q180 117 210 132 Q240 147 270 132"/>
+            <path d="M30 150 Q60 135 90 150 Q120 165 150 150 Q180 135 210 150 Q240 165 270 150"/>
+            <path d="M30 168 Q60 153 90 168 Q120 183 150 168 Q180 153 210 168 Q240 183 270 168"/>
+            <path d="M30 186 Q60 171 90 186 Q120 201 150 186 Q180 171 210 186 Q240 201 270 186"/>
+            <path d="M30 204 Q60 189 90 204 Q120 219 150 204 Q180 189 210 204 Q240 219 270 204"/>
+            <path d="M30 222 Q60 207 90 222 Q120 237 150 222 Q180 207 210 222 Q240 237 270 222"/>
+            <path d="M30 240 Q60 225 90 240 Q120 255 150 240 Q180 225 210 240 Q240 255 270 240"/>
+            <path d="M30 258 Q60 243 90 258 Q120 273 150 258 Q180 243 210 258 Q240 273 270 258"/>
+            <path d="M30 276 Q60 261 90 276 Q120 291 150 276 Q180 261 210 276 Q240 291 270 276"/>
+            <path d="M30 294 Q60 279 90 294 Q120 309 150 294 Q180 279 210 294 Q240 309 270 294"/>
+            <path d="M30 312 Q60 297 90 312 Q120 327 150 312 Q180 297 210 312 Q240 327 270 312"/>
+            <path d="M30 330 Q60 315 90 330 Q120 345 150 330 Q180 315 210 330 Q240 345 270 330"/>
+            <path d="M30 348 Q60 333 90 348 Q120 363 150 348 Q180 333 210 348 Q240 363 270 348"/>
+            <path d="M30 366 Q60 351 90 366 Q120 381 150 366 Q180 351 210 366 Q240 381 270 366"/>
+            <path d="M30 384 Q60 369 90 384 Q120 399 150 384 Q180 369 210 384 Q240 399 270 384"/>
+          </g>
+          <text x="150" y="210" text-anchor="middle" font-family="Cormorant Garamond, serif" font-size="28" font-style="italic" fill="#5a4f47" opacity="0.25">Alma</text>
+        </svg>
+        <div class="pattern-badge">New</div>
+      </div>
+      <h3>Alma Pullover</h3>
+      <div class="pattern-meta">
+        <span class="pattern-level">Intermediate</span>
+        <span class="pattern-price">€7.50</span>
+      </div>
+    </div>
+    <div class="pattern-card">
+      <div class="pattern-img">
+        <svg viewBox="0 0 300 400" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:100%;display:block;">
+          <rect width="300" height="400" fill="#d8cfc5"/>
+          <g stroke="#8c7b6a" stroke-width="1.5" fill="none" opacity="0.6">
+            <path d="M80 40 C80 80 120 80 120 120 C120 160 80 160 80 200 C80 240 120 240 120 280 C120 320 80 320 80 360"/>
+            <path d="M120 40 C120 80 80 80 80 120 C80 160 120 160 120 200 C120 240 80 240 80 280 C80 320 120 320 120 360"/>
+            <path d="M180 40 C180 80 220 80 220 120 C220 160 180 160 180 200 C180 240 220 240 220 280 C220 320 180 320 180 360"/>
+            <path d="M220 40 C220 80 180 80 180 120 C180 160 220 160 220 200 C220 240 180 240 180 280 C180 320 220 320 220 360"/>
+            <line x1="140" y1="30" x2="140" y2="370" stroke-width="1"/>
+            <line x1="155" y1="30" x2="155" y2="370" stroke-width="1"/>
+          </g>
+        </svg>
+      </div>
+      <h3>Birch Cabled Cardigan</h3>
+      <div class="pattern-meta">
+        <span class="pattern-level">Advanced</span>
+        <span class="pattern-price">€9.00</span>
+      </div>
+    </div>
+    <div class="pattern-card">
+      <div class="pattern-img">
+        <svg viewBox="0 0 300 400" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:100%;display:block;">
+          <rect width="300" height="400" fill="#ede5da"/>
+          <g stroke="#a09080" stroke-width="1" fill="none" opacity="0.7">
+            <circle cx="150" cy="80" r="20"/>
+            <circle cx="110" cy="140" r="20"/>
+            <circle cx="190" cy="140" r="20"/>
+            <circle cx="70" cy="200" r="20"/>
+            <circle cx="150" cy="200" r="20"/>
+            <circle cx="230" cy="200" r="20"/>
+            <circle cx="110" cy="260" r="20"/>
+            <circle cx="190" cy="260" r="20"/>
+            <circle cx="150" cy="320" r="20"/>
+            <line x1="150" y1="100" x2="110" y2="120"/>
+            <line x1="150" y1="100" x2="190" y2="120"/>
+            <line x1="110" y1="160" x2="70" y2="180"/>
+            <line x1="110" y1="160" x2="150" y2="180"/>
+            <line x1="190" y1="160" x2="150" y2="180"/>
+            <line x1="190" y1="160" x2="230" y2="180"/>
+            <line x1="70" y1="220" x2="110" y2="240"/>
+            <line x1="150" y1="220" x2="110" y2="240"/>
+            <line x1="150" y1="220" x2="190" y2="240"/>
+            <line x1="230" y1="220" x2="190" y2="240"/>
+            <line x1="110" y1="280" x2="150" y2="300"/>
+            <line x1="190" y1="280" x2="150" y2="300"/>
+          </g>
+          <text x="150" y="370" text-anchor="middle" font-family="Cormorant Garamond, serif" font-size="11" letter-spacing="3" fill="#8c7b6a" opacity="0.6">LACE SHAWL</text>
+        </svg>
+        <div class="pattern-badge">Bestseller</div>
+      </div>
+      <h3>Solstice Shawl</h3>
+      <div class="pattern-meta">
+        <span class="pattern-level">Beginner</span>
+        <span class="pattern-price">€5.50</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="about">
+  <div class="about-img">
+    <svg viewBox="0 0 500 600" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:100%;display:block;">
+      <rect width="500" height="600" fill="#d8cfc5"/>
+      <circle cx="250" cy="180" r="90" fill="#c4b9a8" opacity="0.6"/>
+      <circle cx="250" cy="180" r="90" fill="none" stroke="#a09080" stroke-width="1.5"/>
+      <line x1="160" y1="320" x2="340" y2="420" stroke="#5a4f47" stroke-width="3" stroke-linecap="round"/>
+      <line x1="340" y1="320" x2="160" y2="420" stroke="#5a4f47" stroke-width="3" stroke-linecap="round"/>
+      <path d="M200 380 Q250 350 300 380 Q250 410 200 380Z" fill="#b89a6e" opacity="0.4"/>
+      <path d="M200 400 Q250 370 300 400 Q250 430 200 400Z" fill="#b89a6e" opacity="0.3"/>
+      <g stroke="#a09080" stroke-width="1" fill="none" opacity="0.4">
+        <path d="M0 480 Q62 460 125 480 Q187 500 250 480 Q312 460 375 480 Q437 500 500 480"/>
+        <path d="M0 495 Q62 475 125 495 Q187 515 250 495 Q312 475 375 495 Q437 515 500 495"/>
+        <path d="M0 510 Q62 490 125 510 Q187 530 250 510 Q312 490 375 510 Q437 530 500 510"/>
+        <path d="M0 525 Q62 505 125 525 Q187 545 250 525 Q312 505 375 525 Q437 545 500 525"/>
+        <path d="M0 540 Q62 520 125 540 Q187 560 250 540 Q312 520 375 540 Q437 560 500 540"/>
+        <path d="M0 555 Q62 535 125 555 Q187 575 250 555 Q312 535 375 555 Q437 575 500 555"/>
+      </g>
+      <text x="250" y="290" text-anchor="middle" font-family="Cormorant Garamond, serif" font-size="14" font-style="italic" letter-spacing="2" fill="#5a4f47" opacity="0.5">the maker</text>
+    </svg>
+  </div>
+  <div class="about-content">
+    <p class="section-label">About the Maker</p>
+    <h2 class="section-title" style="color:var(--warm-white);">Where craft meets<br><em style="color:var(--gold)">quiet beauty</em></h2>
+    <p class="about-text">Each Lagom Knit pattern is designed with a belief in balance — not too much, not too little. Just right. Rooted in Scandinavian sensibility, every design is tested for wearability, clarity of instruction, and timeless elegance.</p>
+    <div class="about-stats">
+      <div>
+        <span class="stat-num">40+</span>
+        <span class="stat-label">Patterns published</span>
+      </div>
+      <div>
+        <span class="stat-num">12k</span>
+        <span class="stat-label">Happy makers</span>
+      </div>
+      <div>
+        <span class="stat-num">5★</span>
+        <span class="stat-label">Average rating</span>
+      </div>
+    </div>
+    <button class="btn-ghost" style="border-color:rgba(255,255,255,0.2);color:rgba(253,251,248,0.7);width:fit-content;">Read our story</button>
+  </div>
+</section>
+
+<section class="blog">
+  <div class="blog-header">
+    <p class="section-label">The Journal</p>
+    <h2 class="section-title">Tips & Inspiration</h2>
+  </div>
+  <div class="blog-grid">
+    <div class="blog-card">
+      <div class="blog-img" style="background:#c4b9a8;">
+        <svg viewBox="0 0 400 250" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:100%;display:block;">
+          <rect width="400" height="250" fill="#c4b9a8"/>
+          <g stroke="#8c7b6a" stroke-width="1.5" fill="none" opacity="0.5">
+            <path d="M0 40 Q50 25 100 40 Q150 55 200 40 Q250 25 300 40 Q350 55 400 40"/>
+            <path d="M0 60 Q50 45 100 60 Q150 75 200 60 Q250 45 300 60 Q350 75 400 60"/>
+            <path d="M0 80 Q50 65 100 80 Q150 95 200 80 Q250 65 300 80 Q350 95 400 80"/>
+            <path d="M0 100 Q50 85 100 100 Q150 115 200 100 Q250 85 300 100 Q350 115 400 100"/>
+            <path d="M0 120 Q50 105 100 120 Q150 135 200 120 Q250 105 300 120 Q350 135 400 120"/>
+            <path d="M0 140 Q50 125 100 140 Q150 155 200 140 Q250 125 300 140 Q350 155 400 140"/>
+            <path d="M0 160 Q50 145 100 160 Q150 175 200 160 Q250 145 300 160 Q350 175 400 160"/>
+            <path d="M0 180 Q50 165 100 180 Q150 195 200 180 Q250 165 300 180 Q350 195 400 180"/>
+            <path d="M0 200 Q50 185 100 200 Q150 215 200 200 Q250 185 300 200 Q350 215 400 200"/>
+            <path d="M0 220 Q50 205 100 220 Q150 235 200 220 Q250 205 300 220 Q350 235 400 220"/>
+          </g>
+          <text x="200" y="135" text-anchor="middle" font-family="Cormorant Garamond, serif" font-size="32" font-style="italic" fill="#5a4f47" opacity="0.3">yarn weight</text>
+        </svg>
+      </div>
+      <div class="blog-card-content">
+        <span class="blog-category">Technique</span>
+        <h3>Understanding yarn weight and how it changes your knitting</h3>
+        <p>A beginner-friendly guide to choosing the right yarn for any pattern, and how substitutions affect the final drape.</p>
+      </div>
+    </div>
+    <div class="blog-card">
+      <div class="blog-img" style="background:#ddd5c8;">
+        <svg viewBox="0 0 200 125" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:100%;display:block;">
+          <rect width="200" height="125" fill="#ddd5c8"/>
+          <circle cx="100" cy="62" r="35" fill="none" stroke="#8c7b6a" stroke-width="1.5" opacity="0.6"/>
+          <circle cx="100" cy="62" r="20" fill="none" stroke="#8c7b6a" stroke-width="1" opacity="0.4"/>
+          <circle cx="100" cy="62" r="8" fill="#b89a6e" opacity="0.5"/>
+        </svg>
+      </div>
+      <div class="blog-card-content">
+        <span class="blog-category">Inspiration</span>
+        <h3>Five colour palettes for autumn knitting</h3>
+        <p>Warm ochres, deep forest greens, and soft taupes that will make your autumn pieces glow.</p>
+      </div>
+    </div>
+    <div class="blog-card">
+      <div class="blog-img" style="background:#e4ddd4;">
+        <svg viewBox="0 0 200 125" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:100%;display:block;">
+          <rect width="200" height="125" fill="#e4ddd4"/>
+          <line x1="60" y1="30" x2="140" y2="95" stroke="#5a4f47" stroke-width="2.5" stroke-linecap="round" opacity="0.6"/>
+          <line x1="140" y1="30" x2="60" y2="95" stroke="#5a4f47" stroke-width="2.5" stroke-linecap="round" opacity="0.6"/>
+          <circle cx="100" cy="62" r="12" fill="#b89a6e" opacity="0.4"/>
+        </svg>
+      </div>
+      <div class="blog-card-content">
+        <span class="blog-category">Tips</span>
+        <h3>How to avoid dropped stitches on long cables</h3>
+        <p>A simple stitch marker strategy that saves hours of unknitting.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div>
+    <div class="footer-brand">Lagom <span>Knit</span></div>
+    <p class="footer-desc">Thoughtfully crafted knitting patterns for makers who value the process. Based in Sweden, shipped worldwide as digital downloads.</p>
+  </div>
+  <div class="footer-col">
+    <h4>Shop</h4>
+    <ul>
+      <li>All Patterns</li>
+      <li>Beginner</li>
+      <li>Intermediate</li>
+      <li>Advanced</li>
+      <li>Bundles</li>
+    </ul>
+  </div>
+  <div class="footer-col">
+    <h4>Learn</h4>
+    <ul>
+      <li>Journal</li>
+      <li>Tutorials</li>
+      <li>Yarn Guide</li>
+      <li>FAQ</li>
+    </ul>
+  </div>
+  <div class="footer-col">
+    <h4>Connect</h4>
+    <ul>
+      <li>About</li>
+      <li>Instagram</li>
+      <li>Ravelry</li>
+      <li>Newsletter</li>
+      <li>Contact</li>
+    </ul>
+  </div>
+</footer>
+<div class="footer-bottom">
+  <p>© 2025 Lagom Knit. All rights reserved.</p>
+  <p>Designed with care in Sweden</p>
+</div>
+
+</body>
+</html>
