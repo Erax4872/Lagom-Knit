@@ -1,0 +1,417 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Browse Patterns — Lagom Knit</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&family=Jost:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --cream: #f8f5f0;
+    --warm-white: #fdfbf8;
+    --stone: #c4b9a8;
+    --bark: #8c7b6a;
+    --ink: #2a231e;
+    --ink-light: #5a4f47;
+    --gold: #b89a6e;
+    --font-serif: 'Cormorant Garamond', serif;
+    --font-sans: 'Jost', sans-serif;
+  }
+  body { font-family: var(--font-sans); background: var(--warm-white); color: var(--ink); line-height: 1.6; }
+
+  nav {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 1.25rem 3rem;
+    background: rgba(253,251,248,0.92); backdrop-filter: blur(8px);
+    border-bottom: 1px solid rgba(196,185,168,0.3);
+  }
+  .nav-logo { font-family: var(--font-serif); font-size: 1.4rem; font-weight: 400; letter-spacing: 0.08em; color: var(--ink); text-decoration: none; }
+  .nav-logo span { color: var(--gold); font-style: italic; }
+  .nav-links { display: flex; gap: 2.5rem; list-style: none; }
+  .nav-links a { font-size: 0.75rem; letter-spacing: 0.15em; text-transform: uppercase; color: var(--ink-light); text-decoration: none; font-weight: 400; transition: color 0.2s; }
+  .nav-links a:hover, .nav-links a.active { color: var(--gold); }
+  .cart-btn { font-size: 0.7rem; letter-spacing: 0.15em; text-transform: uppercase; background: var(--ink); color: var(--warm-white); border: none; padding: 0.6rem 1.4rem; cursor: pointer; font-family: var(--font-sans); transition: background 0.2s; }
+  .cart-btn:hover { background: var(--gold); }
+
+  .page-header {
+    padding: 8rem 5rem 3rem;
+    border-bottom: 1px solid rgba(196,185,168,0.3);
+    display: flex; align-items: flex-end; justify-content: space-between;
+  }
+  .page-eyebrow { font-size: 0.65rem; letter-spacing: 0.25em; text-transform: uppercase; color: var(--gold); margin-bottom: 0.5rem; }
+  .page-title { font-family: var(--font-serif); font-size: clamp(2.5rem, 4vw, 3.5rem); font-weight: 300; line-height: 1.1; }
+  .result-count { font-size: 0.8rem; color: var(--bark); font-weight: 300; }
+
+  .layout { display: grid; grid-template-columns: 240px 1fr; gap: 0; min-height: 80vh; }
+
+  /* FILTERS */
+  .filters {
+    padding: 2.5rem 2rem 2.5rem 5rem;
+    border-right: 1px solid rgba(196,185,168,0.3);
+    position: sticky; top: 72px; align-self: start;
+  }
+  .filter-group { margin-bottom: 2rem; }
+  .filter-label { font-size: 0.65rem; letter-spacing: 0.2em; text-transform: uppercase; color: var(--gold); margin-bottom: 0.75rem; display: block; }
+  .filter-option { display: flex; align-items: center; gap: 0.6rem; margin-bottom: 0.5rem; cursor: pointer; }
+  .filter-option input[type="checkbox"] { accent-color: var(--ink); width: 13px; height: 13px; cursor: pointer; }
+  .filter-option label { font-size: 0.8rem; color: var(--ink-light); font-weight: 300; cursor: pointer; transition: color 0.2s; }
+  .filter-option:hover label { color: var(--ink); }
+  .filter-divider { height: 1px; background: rgba(196,185,168,0.3); margin-bottom: 2rem; }
+  .price-range { display: flex; flex-direction: column; gap: 0.75rem; }
+  .price-inputs { display: flex; align-items: center; gap: 0.5rem; }
+  .price-input { width: 70px; background: var(--cream); border: 1px solid rgba(196,185,168,0.5); padding: 0.4rem 0.6rem; font-size: 0.8rem; font-family: var(--font-sans); color: var(--ink); }
+  .price-sep { font-size: 0.75rem; color: var(--bark); }
+  .clear-btn { font-size: 0.65rem; letter-spacing: 0.12em; text-transform: uppercase; background: none; border: none; color: var(--bark); cursor: pointer; font-family: var(--font-sans); padding: 0; transition: color 0.2s; margin-top: 1rem; display: block; }
+  .clear-btn:hover { color: var(--ink); }
+
+  /* GRID */
+  .grid-area { padding: 2.5rem 5rem 5rem 3rem; }
+  .sort-bar { display: flex; justify-content: flex-end; align-items: center; gap: 1rem; margin-bottom: 2rem; }
+  .sort-label { font-size: 0.75rem; color: var(--bark); }
+  .sort-select { font-size: 0.75rem; font-family: var(--font-sans); background: var(--cream); border: 1px solid rgba(196,185,168,0.5); padding: 0.4rem 0.75rem; color: var(--ink); cursor: pointer; }
+
+  .patterns-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 2rem; }
+
+  .pattern-card { cursor: pointer; transition: transform 0.3s ease; }
+  .pattern-card:hover { transform: translateY(-4px); }
+  .pattern-card.hidden { display: none; }
+
+  .pattern-img { aspect-ratio: 3/4; margin-bottom: 1.1rem; position: relative; overflow: hidden; background: var(--cream); }
+  .pattern-badge { position: absolute; top: 0.75rem; right: 0.75rem; background: var(--warm-white); padding: 0.25rem 0.6rem; font-size: 0.6rem; letter-spacing: 0.12em; text-transform: uppercase; color: var(--bark); }
+  .pattern-type-tag { position: absolute; bottom: 0.75rem; left: 0.75rem; background: rgba(42,35,30,0.7); padding: 0.25rem 0.6rem; font-size: 0.6rem; letter-spacing: 0.12em; text-transform: uppercase; color: rgba(253,251,248,0.9); }
+
+  .pattern-card h3 { font-family: var(--font-serif); font-size: 1.25rem; font-weight: 400; color: var(--ink); margin-bottom: 0.3rem; }
+  .pattern-meta { display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem; }
+  .pattern-level { font-size: 0.65rem; letter-spacing: 0.12em; text-transform: uppercase; color: var(--bark); }
+  .pattern-price { font-size: 0.9rem; font-weight: 500; color: var(--ink); }
+  .pattern-desc { font-size: 0.78rem; color: var(--ink-light); font-weight: 300; line-height: 1.6; margin-bottom: 0.75rem; }
+  .btn-buy { font-size: 0.65rem; letter-spacing: 0.13em; text-transform: uppercase; background: var(--ink); color: var(--warm-white); border: none; padding: 0.6rem 1.2rem; cursor: pointer; font-family: var(--font-sans); font-weight: 400; transition: background 0.2s; width: 100%; }
+  .btn-buy:hover { background: var(--gold); }
+
+  .no-results { grid-column: 1/-1; text-align: center; padding: 4rem 0; }
+  .no-results p { font-family: var(--font-serif); font-size: 1.5rem; font-weight: 300; color: var(--bark); font-style: italic; }
+</style>
+</head>
+<body>
+
+<nav>
+  <a class="nav-logo" href="index.html">Lagom <span>Knit</span></a>
+  <ul class="nav-links">
+    <li><a href="browse.html" class="active">Patterns</a></li>
+    <li><a href="index.html#collections">Collections</a></li>
+    <li><a href="index.html#about">About</a></li>
+    <li><a href="index.html#journal">Journal</a></li>
+  </ul>
+  <button class="cart-btn">Cart (0)</button>
+</nav>
+
+<div class="page-header">
+  <div>
+    <p class="page-eyebrow">The Collection</p>
+    <h1 class="page-title">Browse Patterns</h1>
+  </div>
+  <p class="result-count" id="result-count">6 patterns</p>
+</div>
+
+<div class="layout">
+
+  <!-- FILTERS -->
+  <aside class="filters">
+    <div class="filter-group">
+      <span class="filter-label">Difficulty</span>
+      <div class="filter-option"><input type="checkbox" id="f-beginner" data-filter="difficulty" value="beginner"><label for="f-beginner">Beginner</label></div>
+      <div class="filter-option"><input type="checkbox" id="f-intermediate" data-filter="difficulty" value="intermediate"><label for="f-intermediate">Intermediate</label></div>
+      <div class="filter-option"><input type="checkbox" id="f-advanced" data-filter="difficulty" value="advanced"><label for="f-advanced">Advanced</label></div>
+    </div>
+    <div class="filter-divider"></div>
+    <div class="filter-group">
+      <span class="filter-label">Type</span>
+      <div class="filter-option"><input type="checkbox" id="f-sweater" data-filter="type" value="sweater"><label for="f-sweater">Sweater</label></div>
+      <div class="filter-option"><input type="checkbox" id="f-cardigan" data-filter="type" value="cardigan"><label for="f-cardigan">Cardigan</label></div>
+      <div class="filter-option"><input type="checkbox" id="f-shawl" data-filter="type" value="shawl"><label for="f-shawl">Shawl</label></div>
+      <div class="filter-option"><input type="checkbox" id="f-hat" data-filter="type" value="hat"><label for="f-hat">Hat</label></div>
+      <div class="filter-option"><input type="checkbox" id="f-accessory" data-filter="type" value="accessory"><label for="f-accessory">Accessory</label></div>
+    </div>
+    <div class="filter-divider"></div>
+    <div class="filter-group">
+      <span class="filter-label">Price range</span>
+      <div class="price-range">
+        <div class="price-inputs">
+          <input class="price-input" type="number" id="price-min" placeholder="€0" min="0" max="50">
+          <span class="price-sep">—</span>
+          <input class="price-input" type="number" id="price-max" placeholder="€50" min="0" max="50">
+        </div>
+      </div>
+    </div>
+    <button class="clear-btn" id="clear-filters">Clear all filters</button>
+  </aside>
+
+  <!-- GRID -->
+  <div class="grid-area">
+    <div class="sort-bar">
+      <span class="sort-label">Sort by</span>
+      <select class="sort-select" id="sort-select">
+        <option value="default">Featured</option>
+        <option value="price-asc">Price: low to high</option>
+        <option value="price-desc">Price: high to low</option>
+        <option value="name">Name A–Z</option>
+      </select>
+    </div>
+
+    <div class="patterns-grid" id="patterns-grid">
+
+      <!-- Pattern 1 -->
+      <div class="pattern-card" data-difficulty="intermediate" data-type="sweater" data-price="7.50" data-name="Alma Pullover">
+        <div class="pattern-img">
+          <svg viewBox="0 0 300 400" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:100%;display:block;">
+            <rect width="300" height="400" fill="#e8e0d4"/>
+            <g stroke="#a09080" stroke-width="1.2" fill="none" opacity="0.7">
+              <path d="M30 50 Q60 35 90 50 Q120 65 150 50 Q180 35 210 50 Q240 65 270 50"/>
+              <path d="M30 68 Q60 53 90 68 Q120 83 150 68 Q180 53 210 68 Q240 83 270 68"/>
+              <path d="M30 86 Q60 71 90 86 Q120 101 150 86 Q180 71 210 86 Q240 101 270 86"/>
+              <path d="M30 104 Q60 89 90 104 Q120 119 150 104 Q180 89 210 104 Q240 119 270 104"/>
+              <path d="M30 122 Q60 107 90 122 Q120 137 150 122 Q180 107 210 122 Q240 137 270 122"/>
+              <path d="M30 140 Q60 125 90 140 Q120 155 150 140 Q180 125 210 140 Q240 155 270 140"/>
+              <path d="M30 158 Q60 143 90 158 Q120 173 150 158 Q180 143 210 158 Q240 173 270 158"/>
+              <path d="M30 176 Q60 161 90 176 Q120 191 150 176 Q180 161 210 176 Q240 191 270 176"/>
+              <path d="M30 194 Q60 179 90 194 Q120 209 150 194 Q180 179 210 194 Q240 209 270 194"/>
+              <path d="M30 212 Q60 197 90 212 Q120 227 150 212 Q180 197 210 212 Q240 227 270 212"/>
+              <path d="M30 230 Q60 215 90 230 Q120 245 150 230 Q180 215 210 230 Q240 245 270 230"/>
+              <path d="M30 248 Q60 233 90 248 Q120 263 150 248 Q180 233 210 248 Q240 263 270 248"/>
+              <path d="M30 266 Q60 251 90 266 Q120 281 150 266 Q180 251 210 266 Q240 281 270 266"/>
+              <path d="M30 284 Q60 269 90 284 Q120 299 150 284 Q180 269 210 284 Q240 299 270 284"/>
+              <path d="M30 302 Q60 287 90 302 Q120 317 150 302 Q180 287 210 302 Q240 317 270 302"/>
+              <path d="M30 320 Q60 305 90 320 Q120 335 150 320 Q180 305 210 320 Q240 335 270 320"/>
+              <path d="M30 338 Q60 323 90 338 Q120 353 150 338 Q180 323 210 338 Q240 353 270 338"/>
+              <path d="M30 356 Q60 341 90 356 Q120 371 150 356 Q180 341 210 356 Q240 371 270 356"/>
+              <path d="M30 374 Q60 359 90 374 Q120 389 150 374 Q180 359 210 374 Q240 389 270 374"/>
+            </g>
+          </svg>
+          <div class="pattern-badge">New</div>
+          <div class="pattern-type-tag">Sweater</div>
+        </div>
+        <h3>Alma Pullover</h3>
+        <div class="pattern-meta">
+          <span class="pattern-level">Intermediate</span>
+          <span class="pattern-price">€7.50</span>
+        </div>
+        <p class="pattern-desc">A relaxed, everyday pullover with subtle wavy texture. Worked top-down in the round.</p>
+        <button class="btn-buy">Add to cart</button>
+      </div>
+
+      <!-- Pattern 2 -->
+      <div class="pattern-card" data-difficulty="advanced" data-type="cardigan" data-price="9.00" data-name="Birch Cabled Cardigan">
+        <div class="pattern-img">
+          <svg viewBox="0 0 300 400" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:100%;display:block;">
+            <rect width="300" height="400" fill="#d8cfc5"/>
+            <g stroke="#8c7b6a" stroke-width="1.5" fill="none" opacity="0.6">
+              <path d="M80 40 C80 80 120 80 120 120 C120 160 80 160 80 200 C80 240 120 240 120 280 C120 320 80 320 80 360"/>
+              <path d="M120 40 C120 80 80 80 80 120 C80 160 120 160 120 200 C120 240 80 240 80 280 C80 320 120 320 120 360"/>
+              <path d="M180 40 C180 80 220 80 220 120 C220 160 180 160 180 200 C180 240 220 240 220 280 C220 320 180 320 180 360"/>
+              <path d="M220 40 C220 80 180 80 180 120 C180 160 220 160 220 200 C220 240 180 240 180 280 C180 320 220 320 220 360"/>
+              <line x1="140" y1="30" x2="140" y2="370" stroke-width="1"/>
+              <line x1="155" y1="30" x2="155" y2="370" stroke-width="1"/>
+            </g>
+          </svg>
+          <div class="pattern-type-tag">Cardigan</div>
+        </div>
+        <h3>Birch Cabled Cardigan</h3>
+        <div class="pattern-meta">
+          <span class="pattern-level">Advanced</span>
+          <span class="pattern-price">€9.00</span>
+        </div>
+        <p class="pattern-desc">Statement cable panels on a classic open-front cardigan. A heirloom piece worth the effort.</p>
+        <button class="btn-buy">Add to cart</button>
+      </div>
+
+      <!-- Pattern 3 -->
+      <div class="pattern-card" data-difficulty="beginner" data-type="shawl" data-price="5.50" data-name="Solstice Shawl">
+        <div class="pattern-img">
+          <svg viewBox="0 0 300 400" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:100%;display:block;">
+            <rect width="300" height="400" fill="#ede5da"/>
+            <g stroke="#a09080" stroke-width="1" fill="none" opacity="0.7">
+              <circle cx="150" cy="80" r="20"/><circle cx="110" cy="140" r="20"/><circle cx="190" cy="140" r="20"/>
+              <circle cx="70" cy="200" r="20"/><circle cx="150" cy="200" r="20"/><circle cx="230" cy="200" r="20"/>
+              <circle cx="110" cy="260" r="20"/><circle cx="190" cy="260" r="20"/><circle cx="150" cy="320" r="20"/>
+              <line x1="150" y1="100" x2="110" y2="120"/><line x1="150" y1="100" x2="190" y2="120"/>
+              <line x1="110" y1="160" x2="70" y2="180"/><line x1="110" y1="160" x2="150" y2="180"/>
+              <line x1="190" y1="160" x2="150" y2="180"/><line x1="190" y1="160" x2="230" y2="180"/>
+              <line x1="70" y1="220" x2="110" y2="240"/><line x1="150" y1="220" x2="110" y2="240"/>
+              <line x1="150" y1="220" x2="190" y2="240"/><line x1="230" y1="220" x2="190" y2="240"/>
+              <line x1="110" y1="280" x2="150" y2="300"/><line x1="190" y1="280" x2="150" y2="300"/>
+            </g>
+          </svg>
+          <div class="pattern-badge">Bestseller</div>
+          <div class="pattern-type-tag">Shawl</div>
+        </div>
+        <h3>Solstice Shawl</h3>
+        <div class="pattern-meta">
+          <span class="pattern-level">Beginner</span>
+          <span class="pattern-price">€5.50</span>
+        </div>
+        <p class="pattern-desc">A delicate lace shawl that knits up faster than it looks. Perfect first lace project.</p>
+        <button class="btn-buy">Add to cart</button>
+      </div>
+
+      <!-- Pattern 4 -->
+      <div class="pattern-card" data-difficulty="beginner" data-type="hat" data-price="4.00" data-name="Mist Beanie">
+        <div class="pattern-img">
+          <svg viewBox="0 0 300 400" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:100%;display:block;">
+            <rect width="300" height="400" fill="#e2d8cc"/>
+            <ellipse cx="150" cy="160" rx="100" ry="110" fill="none" stroke="#8c7b6a" stroke-width="1.5" opacity="0.5"/>
+            <g stroke="#a09080" stroke-width="1" fill="none" opacity="0.6">
+              <path d="M60 200 Q90 188 120 200 Q150 212 180 200 Q210 188 240 200"/>
+              <path d="M60 216 Q90 204 120 216 Q150 228 180 216 Q210 204 240 216"/>
+              <path d="M60 232 Q90 220 120 232 Q150 244 180 232 Q210 220 240 232"/>
+              <path d="M60 248 Q90 236 120 248 Q150 260 180 248 Q210 236 240 248"/>
+              <path d="M60 264 Q90 252 120 264 Q150 276 180 264 Q210 252 240 264"/>
+              <path d="M60 280 Q90 268 120 280 Q150 292 180 280 Q210 268 240 280"/>
+            </g>
+            <line x1="50" y1="295" x2="250" y2="295" stroke="#8c7b6a" stroke-width="2" opacity="0.4"/>
+            <line x1="50" y1="308" x2="250" y2="308" stroke="#8c7b6a" stroke-width="2" opacity="0.3"/>
+          </svg>
+          <div class="pattern-type-tag">Hat</div>
+        </div>
+        <h3>Mist Beanie</h3>
+        <div class="pattern-meta">
+          <span class="pattern-level">Beginner</span>
+          <span class="pattern-price">€4.00</span>
+        </div>
+        <p class="pattern-desc">A simple, slouchy beanie with a 2×2 ribbed brim. Knit one in a weekend.</p>
+        <button class="btn-buy">Add to cart</button>
+      </div>
+
+      <!-- Pattern 5 -->
+      <div class="pattern-card" data-difficulty="intermediate" data-type="accessory" data-price="6.00" data-name="Dusk Mittens">
+        <div class="pattern-img">
+          <svg viewBox="0 0 300 400" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:100%;display:block;">
+            <rect width="300" height="400" fill="#ddd5c8"/>
+            <path d="M100 320 Q80 280 85 200 Q88 150 110 130 Q130 115 150 130 Q170 115 190 130 Q212 150 215 200 Q220 280 200 320Z" fill="none" stroke="#8c7b6a" stroke-width="1.5" opacity="0.6"/>
+            <path d="M175 135 Q195 110 205 130 Q215 150 210 170 Q195 160 185 155Z" fill="none" stroke="#8c7b6a" stroke-width="1.2" opacity="0.5"/>
+            <g stroke="#a09080" stroke-width="1" fill="none" opacity="0.5">
+              <path d="M95 200 Q120 190 150 200 Q180 210 205 200"/>
+              <path d="M93 216 Q120 206 150 216 Q180 226 207 216"/>
+              <path d="M92 232 Q120 222 150 232 Q180 242 208 232"/>
+              <path d="M92 248 Q120 238 150 248 Q180 258 208 248"/>
+              <path d="M93 264 Q120 254 150 264 Q180 274 207 264"/>
+              <path d="M95 280 Q120 270 150 280 Q180 290 205 280"/>
+            </g>
+          </svg>
+          <div class="pattern-type-tag">Accessory</div>
+        </div>
+        <h3>Dusk Mittens</h3>
+        <div class="pattern-meta">
+          <span class="pattern-level">Intermediate</span>
+          <span class="pattern-price">€6.00</span>
+        </div>
+        <p class="pattern-desc">Warm, close-fitting mittens with a thumb gusset and optional stranded colourwork cuff.</p>
+        <button class="btn-buy">Add to cart</button>
+      </div>
+
+      <!-- Pattern 6 -->
+      <div class="pattern-card" data-difficulty="advanced" data-type="sweater" data-price="10.00" data-name="Fjord Yoke Sweater">
+        <div class="pattern-img">
+          <svg viewBox="0 0 300 400" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:100%;display:block;">
+            <rect width="300" height="400" fill="#cfc7bc"/>
+            <path d="M80 130 Q150 80 220 130 L230 380 Q150 395 70 380Z" fill="none" stroke="#8c7b6a" stroke-width="1.5" opacity="0.5"/>
+            <g stroke="#8c7b6a" stroke-width="1" fill="none" opacity="0.6">
+              <path d="M85 150 Q150 120 215 150"/>
+              <path d="M82 165 Q150 133 218 165"/>
+              <path d="M80 180 Q150 147 220 180"/>
+            </g>
+            <g stroke="#a09080" stroke-width="1" fill="none" opacity="0.5">
+              <path d="M78 200 Q105 190 150 200 Q195 210 222 200"/>
+              <path d="M76 216 Q105 206 150 216 Q195 226 224 216"/>
+              <path d="M76 232 Q105 222 150 232 Q195 242 224 232"/>
+              <path d="M76 248 Q105 238 150 248 Q195 258 224 248"/>
+              <path d="M77 264 Q105 254 150 264 Q195 274 223 264"/>
+              <path d="M78 280 Q105 270 150 280 Q195 290 222 280"/>
+              <path d="M79 296 Q105 286 150 296 Q195 306 221 296"/>
+              <path d="M80 312 Q105 302 150 312 Q195 322 220 312"/>
+              <path d="M82 328 Q105 318 150 328 Q195 338 218 328"/>
+              <path d="M84 344 Q105 334 150 344 Q195 354 216 344"/>
+              <path d="M87 360 Q105 350 150 360 Q195 370 213 360"/>
+            </g>
+            <div class="pattern-badge">New</div>
+          </svg>
+          <div class="pattern-badge">New</div>
+          <div class="pattern-type-tag">Sweater</div>
+        </div>
+        <h3>Fjord Yoke Sweater</h3>
+        <div class="pattern-meta">
+          <span class="pattern-level">Advanced</span>
+          <span class="pattern-price">€10.00</span>
+        </div>
+        <p class="pattern-desc">A stranded colourwork yoke sweater inspired by Nordic traditions. A true showpiece.</p>
+        <button class="btn-buy">Add to cart</button>
+      </div>
+
+      <div class="no-results" id="no-results" style="display:none;">
+        <p>No patterns match your filters.</p>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<script>
+  const cards = document.querySelectorAll('.pattern-card');
+  const countEl = document.getElementById('result-count');
+  const noResults = document.getElementById('no-results');
+  const clearBtn = document.getElementById('clear-filters');
+  const sortSelect = document.getElementById('sort-select');
+  const grid = document.getElementById('patterns-grid');
+
+  function getActiveFilters() {
+    const difficulty = [...document.querySelectorAll('[data-filter="difficulty"]:checked')].map(el => el.value);
+    const type = [...document.querySelectorAll('[data-filter="type"]:checked')].map(el => el.value);
+    const minPrice = parseFloat(document.getElementById('price-min').value) || 0;
+    const maxPrice = parseFloat(document.getElementById('price-max').value) || Infinity;
+    return { difficulty, type, minPrice, maxPrice };
+  }
+
+  function applyFilters() {
+    const { difficulty, type, minPrice, maxPrice } = getActiveFilters();
+    let visible = 0;
+    cards.forEach(card => {
+      const d = card.dataset.difficulty;
+      const t = card.dataset.type;
+      const p = parseFloat(card.dataset.price);
+      const diffOk = difficulty.length === 0 || difficulty.includes(d);
+      const typeOk = type.length === 0 || type.includes(t);
+      const priceOk = p >= minPrice && p <= maxPrice;
+      if (diffOk && typeOk && priceOk) { card.classList.remove('hidden'); visible++; }
+      else card.classList.add('hidden');
+    });
+    countEl.textContent = visible + ' pattern' + (visible !== 1 ? 's' : '');
+    noResults.style.display = visible === 0 ? 'block' : 'none';
+  }
+
+  function applySort() {
+    const val = sortSelect.value;
+    const cardArr = [...cards];
+    cardArr.sort((a, b) => {
+      if (val === 'price-asc') return parseFloat(a.dataset.price) - parseFloat(b.dataset.price);
+      if (val === 'price-desc') return parseFloat(b.dataset.price) - parseFloat(a.dataset.price);
+      if (val === 'name') return a.dataset.name.localeCompare(b.dataset.name);
+      return 0;
+    });
+    cardArr.forEach(c => grid.appendChild(c));
+    grid.appendChild(noResults);
+  }
+
+  document.querySelectorAll('input[data-filter]').forEach(el => el.addEventListener('change', applyFilters));
+  document.getElementById('price-min').addEventListener('input', applyFilters);
+  document.getElementById('price-max').addEventListener('input', applyFilters);
+  sortSelect.addEventListener('change', () => { applySort(); applyFilters(); });
+  clearBtn.addEventListener('click', () => {
+    document.querySelectorAll('input[data-filter]').forEach(el => el.checked = false);
+    document.getElementById('price-min').value = '';
+    document.getElementById('price-max').value = '';
+    applyFilters();
+  });
+</script>
+</body>
+</html>
